@@ -24,13 +24,20 @@ router.post('/', async (req, res) => {
 
     const result = await scrapeWebsite({ url, headers, body, method, responseFormat });
 
-    if (responseFormat === 'csv') {
+    // Handle different response formats
+    if (responseFormat === 'html') {
+      res.setHeader('Content-Type', 'text/html');
+      return res.send(result); // Send raw HTML
+    } else if (responseFormat === 'csv') {
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename="scraped_data.csv"');
-      return res.send(result);
+      return res.send(result); // Send raw CSV
+    } else if (responseFormat === 'text') {
+      res.setHeader('Content-Type', 'text/plain');
+      return res.send(result); // Send raw text
     } else {
       res.setHeader('Content-Type', 'application/json');
-      return res.json(result);
+      return res.json(result); // Send JSON
     }
   } catch (error) {
     console.error('Error in scrape route:', error.message);
